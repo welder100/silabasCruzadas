@@ -1,0 +1,57 @@
+<!--
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <link rel="stylesheet" href="style.css">
+  <script src="cruzadas.js"></script>
+</head>
+<body>
+  <div id="tituloTopo">
+    <h1>Meu Título</h1>
+  </div>
+  
+  <div id="gridQuadriculado"></div>
+
+  <div id="gridQuestao">
+    <div class="areaSeta">
+      <div id="setaAcima" class="seta" onclick="passaQuestao('proxima')"><img src="img/seta-para-esquerda.png"></div>
+    </div>
+    <div id="questao"></div>
+    <div class="areaSeta">
+      <div id="setaAbaixo" class="seta" onclick="passaQuestao('anterior')"><img src="img/seta-para-direita.png"></div>
+    </div>
+  </div>
+
+  <div id="gridSilabasOpcionais"></div>
+
+  <div id="gridComandos">
+    <button id="botaoBorracha" onclick="borrachaClick()">
+      <img class="imgComandos" src="img/borracha.png">
+    </button>
+    <button id="botaoVisao" onclick="mostrarRespostaModal()">
+      <img class="imgComandos" src="img/visao.png">
+    </button>
+    <button id="botaoConfig" onclick="configClick()">
+      <img class="imgComandos" src="img/config.png">
+    </button>
+    <button id="botaoHome" onclick="homeClick()">
+      <img class="imgComandos" src="img/home.png">
+    </button>
+  </div>
+
+  <!-- Modal para exibir a resposta -->
+  <div id="respostaModal">
+    <p id="respostaTexto"></p>
+  </div>
+
+  <!-- Modal para exibir a conclusão -->
+<div id="conclusaoModal">
+  <p id="conclusaoTexto">Parabéns! Você completou a cruzada corretamente!</p>
+</div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

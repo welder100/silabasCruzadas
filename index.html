@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+-->
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="manifest" href="/silabasCruzadas/manifest.json">
+
+<title>Sílabas Cruzadas</title>
+<style>
+/* Estilos embutidos para simplicidade */
+body {
+  margin: 0;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px; /* Limite máximo para telas grandes */
+}
+
+h1 {
+  font-size: 8vw; /* Tamanho responsivo */
+  color: #333;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.startButton {
+  padding: 15px 20px; /* Ajuste o padding para espaçamento uniforme */
+  font-size: 5vw; /* Tamanho responsivo */
+  border: none;
+  border-radius: 10px;
+  background-color: #06D6A0; /* Verde suave */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 90%; /* Largura do botão */
+  max-width: 350px; /* Limite máximo */
+  margin-bottom: 10px; /* Espaço entre os botões */
+  white-space: nowrap; /* Impede a quebra de linha */
+  text-align: center; /* Centraliza o texto horizontalmente */
+  display: flex; /* Usa flexbox para alinhamento */
+  justify-content: center; /* Centraliza o texto horizontalmente */
+  align-items: center; /* Centraliza o texto verticalmente */
+}
+
+.startButton:hover {
+  background-color: #05b88a; /* Escurece no hover */
+}
+
+.startButton.secondary {
+  background-color: #3A86FF; /* Azul para o botão "Continuar" */
+}
+
+.startButton.secondary:hover {
+  background-color: #2a6fcc; /* Escurece no hover */
+}
+</style>
+<!-- Registrar o Service Worker -->
+<script defer>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/silabasCruzadas/service-worker.js')
+  .then(() => console.log('Service Worker registrado com sucesso'))
+  .catch(error => console.error('Erro ao registrar o Service Worker:', error));
+}
+</script>
+</head>
+<body>
+  <div class="container">
+    <h1>Sílabas Cruzadas</h1>
+    <div id="buttonsContainer">
+      <!-- Botões serão inseridos aqui via JavaScript -->
+    </div>
+  </div>
+
+  <script>
+  // Verifica se há dados salvos no localStorage
+  const dadosSalvos = JSON.parse(localStorage.getItem("cruzadasSalvas")) || {};
+
+  // Seleciona o container dos botões
+  const buttonsContainer = document.getElementById("buttonsContainer");
+
+  // Cria o botão "Novo Jogo"
+  const novoJogoButton = document.createElement("button");
+  novoJogoButton.className = "startButton";
+  novoJogoButton.textContent = "Novo Jogo";
+  novoJogoButton.onclick = () => {
+    // Esvazia o localStorage antes de redirecionar
+    localStorage.removeItem("cruzadasSalvas");
+    window.location.href = "lista.html";
+  };
+
+  // Adiciona o botão "Novo Jogo" ao container
+  buttonsContainer.appendChild(novoJogoButton);
+
+  // Se houver dados salvos, cria o botão "Continuar"
+  if (Object.keys(dadosSalvos).length > 0) {
+    const continuarButton = document.createElement("button");
+    continuarButton.className = "startButton secondary";
+    continuarButton.textContent = "Continuar";
+    continuarButton.onclick = () => {
+      // Redireciona sem alterar o localStorage
+      window.location.href = "lista.html";
+    };
+
+    // Adiciona o botão "Continuar" ao container
+    buttonsContainer.appendChild(continuarButton);
+  }
+  </script>
+</body>
+</html>

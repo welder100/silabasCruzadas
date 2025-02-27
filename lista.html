@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="style.css">
+  <script src="cruzadas.js"></script> <!-- Carrega o arquivo cruzadas.js -->
+  <title>Lista</title>
+  <style>
+  /* Estilos para os botões de progresso */
+  .configButton {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    font-size: 4.5vw;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      to right,
+      var(--color) var(--percentage),
+      #e0e0e0 var(--percentage)
+      );
+      transition: background 0.3s ease;
+      text-align: left;
+      box-sizing: border-box;
+    }
+
+    .configButton .percentage {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 4.5vw;
+      color: #333;
+    }
+
+    .configButton:hover {
+      opacity: 0.9;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="configContent">
+      <div class="header">
+        <h2>Sílabas Cruzadas</h2>
+      </div>
+      <ul id="listaCruzadas">
+        <!-- Os itens da lista serão gerados dinamicamente via JavaScript -->
+      </ul>
+    </div>
+
+    <script>
+
+    function calcularProgresso(estado) {
+      let totalCelulas = 0; // Total de quadrinhos preenchíveis
+      let celulasPreenchidas = 0; // Total de quadrinhos preenchidos
+
+      // Percorre a matriz de estado
+      for (let l = 0; l < estado.length; l++) {
+        for (let c = 0; c < estado[l].length; c++) {
+          // Ignora quadrinhos pretos (marcados com #)
+          if (estado[l][c] !== "#") {
+            totalCelulas++; // Conta apenas quadrinhos preenchíveis
+            if (estado[l][c] !== "") {
+              celulasPreenchidas++; // Conta quadrinhos preenchidos
+            }
+          }
+        }
+      }
+
+      // Calcula a porcentagem de preenchimento
+      return totalCelulas > 0 ? Math.round((celulasPreenchidas / totalCelulas) * 100) : 0;
+    }
+
+    function gerarListaCruzadas() {
+      const listaCruzadas = document.getElementById("listaCruzadas");
+      const dadosSalvos = JSON.parse(localStorage.getItem("cruzadasSalvas")) || {};
+
+      // Carrega as cruzadas do arquivo cruzadas.js
+      cruzadasDatabase.forEach(cruzada => {
+        const idCruzada = cruzada.id; // Já está no formato 'cruzada1', 'cruzada2', etc.
+        const cruzadaSalva = dadosSalvos[idCruzada] || { id: idCruzada, estado: criarEstadoVazio(cruzada) };
+        const progresso = calcularProgresso(cruzadaSalva.estado);
+
+        // Cria o botão com o progresso
+        const button = document.createElement("button");
+        button.className = "configButton";
+        button.style.setProperty("--percentage", `${progresso}%`);
+        button.style.setProperty("--color", getCorProgresso(progresso));
+        button.onclick = () => selecionarCruzada(idCruzada);
+
+        // Adiciona a porcentagem e o nome da cruzada
+        button.innerHTML = `
+        <span class="percentage">${progresso}%</span>
+        <span class="nomeCruzada">${cruzada.nome}</span>
+        `;
+
+        // Adiciona o botão à lista
+        const li = document.createElement("li");
+        li.appendChild(button);
+        listaCruzadas.appendChild(li);
+      });
+    }
+
+    function criarEstadoVazio(cruzada) {
+      // Cria uma matriz 12x6 preenchida com "" (quadrinhos preenchíveis)
+      const estado = Array.from({ length: 12 }, () => Array(6).fill(""));
+
+      // Marca os quadrinhos pretos com #
+      for (let l = 0; l < 12; l++) {
+        for (let c = 0; c < 6; c++) {
+          // Verifica se o quadrinho não faz parte de nenhuma palavra
+          let quadrinhoUsado = false;
+
+          for (const palavra of cruzada.palavras().values()) {
+            const lInicial = palavra.linha;
+            const cInicial = palavra.coluna;
+            const orientacao = palavra.orientacao;
+            const tamanho = palavra.resposta.split("-").length;
+
+            if (
+              (orientacao === "hor" && l === lInicial && c >= cInicial && c < cInicial + tamanho) ||
+              (orientacao === "ver" && c === cInicial && l >= lInicial && l < lInicial + tamanho)
+            ) {
+              quadrinhoUsado = true;
+              break;
+            }
+          }
+
+          // Se o quadrinho não for usado por nenhuma palavra, marca como preto
+          if (!quadrinhoUsado) {
+            estado[l][c] = "#";
+          }
+        }
+      }
+
+      return estado;
+    }
+
+    function selecionarCruzada(idCruzada) {
+      localStorage.setItem("cruzadaCorrente", idCruzada); // Salva a cruzada selecionada
+      window.location.href = "jogo.html"; // Redireciona para o jogo
+    }
+
+    function getCorProgresso(progresso) {
+      if (progresso < 25) return "#FF6F61"; // Vermelho
+      if (progresso < 50) return "#FFD166"; // Amarelo
+      if (progresso < 75) return "#06D6A0"; // Verde
+      return "#118AB2"; // Azul
+    }
+    // Gera a lista de cruzadas ao carregar a página
+    gerarListaCruzadas();
+    </script>
+
+  </body>
+  </html>
